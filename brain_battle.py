@@ -3,13 +3,23 @@ import tkinter as tk
 import time
 import threading
 import random
+import RPi.GPIO as gpio
 
-    
+
+GREEN_GPIO = 21
+RED_GPIO   = 20
+
+
+#seta a GPIO
+gpio.setmode(gpio.BCM)
+gpio.setup(GREEN_GPIO, gpio.IN, pull_up_down = gpio.PUD_DOWN)
+gpio.setup(RED_GPIO, gpio.IN, pull_up_down = gpio.PUD_DOWN)
+
 janela = Tk()
 janela.geometry("1024x810") 
 
 #TITULO
-janela.title("Passa ou repassa")
+janela.title("Brain battle")
 
 top = Frame(janela)
 top.pack(side=tk.TOP)
@@ -92,11 +102,18 @@ def lightEffect(button):
 
 def thread_function(name):
     while True:
-        time.sleep(5)
-        if (random.randint(0,1)):
+        if (gpio.input(GREEN_GPIO) == 1):
             lightEffect(botaoVerde)
-        else:
+        elif(gpio.input(RED_GPIO) == 1):
             lightEffect(botaoVermelho)
+        
+        
+        #codigo para simular o apertar dos botoes aleatoriamente
+        #time.sleep(5)
+        #if (random.randint(0,1)):
+        #    lightEffect(botaoVerde)
+        #else:
+        #    lightEffect(botaoVermelho)
 
 x = threading.Thread(target=thread_function, args=(1,))
 x.start()
@@ -104,3 +121,5 @@ x.start()
 janela.configure(bg='white')
 janela.mainloop()
 
+gpio.cleanup()
+exit()
